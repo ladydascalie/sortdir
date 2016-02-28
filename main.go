@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 )
 
+// UserInfo stores some basic info about the user
 type UserInfo struct {
 	Home     string
 	Name     string
@@ -42,7 +43,9 @@ func main() {
 
 }
 
-// InitUser sets some basic info about the current user
+// Setup grabs some basic info about the current user.
+// I could do without it, but it's convenient and allowed me
+// to learn and remember parts of the stardard library
 func (u *UserInfo) Setup() *UserInfo {
 	user, err := user.Current()
 	Check(err)
@@ -56,6 +59,8 @@ func (u *UserInfo) Setup() *UserInfo {
 	return u
 }
 
+// Safeguard provides basic security by preventing sortdir from running
+// on the user's home directory.
 func Safeguard(dir string) {
 	if dir == "." {
 		pwd := Pwd()
@@ -67,6 +72,7 @@ func Safeguard(dir string) {
 	}
 }
 
+// GoHome moves back into the user's home folder
 func GoHome(u *UserInfo) string {
 	err := os.Chdir(u.Home)
 	Check(err)
@@ -75,17 +81,21 @@ func GoHome(u *UserInfo) string {
 	return wd
 }
 
+// MoveTo is a convenience wrapper over os.Chdir()
 func MoveTo(dir string) {
 	err := os.Chdir(dir)
 	Check(err)
 }
 
+// Pwd is a convenience wrapper over os.Getwd()
 func Pwd() string {
 	wd, err := os.Getwd()
 	Check(err)
 	return wd
 }
 
+// Ls is a convenience wrapper for readdir that just lists the
+// contents of a directory
 func Ls(dir string, dots bool) []string {
 	var listing []string
 	files, err := ioutil.ReadDir(dir)
@@ -102,6 +112,8 @@ func Ls(dir string, dots bool) []string {
 	return listing
 }
 
+// ShouldDisplay tells me wether I should display the file or not
+// based on wether it is hidden or not etc...
 func shouldDisplay(dots bool, fileName string) string {
 	var file string
 	if dots == true {
@@ -114,6 +126,7 @@ func shouldDisplay(dots bool, fileName string) string {
 	return file
 }
 
+// TrimEmpty removes the empty elements from the slice of strings
 func TrimEmpty(ls []string) []string {
 	var trimed []string
 	for _, r := range ls {
@@ -124,6 +137,7 @@ func TrimEmpty(ls []string) []string {
 	return trimed
 }
 
+// IsHiddenFile determines wether we're dealing with a hidden file or not
 func IsHiddenFile(str string) bool {
 	split := strings.Index(str, ".")
 	if split == 0 {
@@ -160,6 +174,8 @@ func SortByExtension(ls []string) {
 	log.Println("Done !")
 }
 
+// UpperFirst is a convenient wrapper that uppercases the first letter
+// of a given string
 func UpperFirst(s string) string {
 	if s == "" {
 		return ""
@@ -170,12 +186,15 @@ func UpperFirst(s string) string {
 	return string(unicode.ToUpper(r)) + s[n:]
 }
 
+// MoveFilesTo moves the files into their own directory
+// determined by assortToFolder
 func MoveFilesTo(files []string, folders []string) {
 	for _, file := range files {
 		assortToFolder(file, folders)
 	}
 }
 
+// Determine which folder for which extension.
 func assortToFolder(file string, folders []string) {
 	for _, folder := range folders {
 		tmpfile := filepath.Ext(file)
