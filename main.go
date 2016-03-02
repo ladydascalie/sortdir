@@ -21,10 +21,19 @@ type UserInfo struct {
 	Gid      string
 }
 
+// User is just a shorthand for the UserInfo struct
+// probably completely useless and could (should?) be taken out
 var User = &UserInfo{}
+
+// Directory is the value provided by the user's input, or, by default the current working directory
 var Directory string
 
 func main() {
+	RunAsCMD()
+}
+
+// RunAsCMD lets you run sortdir from within another go program
+func RunAsCMD() {
 	flag.StringVar(&Directory, "dir", "", "The directory you want to sort. Ex: sortdir -dir=\"/my/folder\"")
 	flag.Parse()
 	if Directory == "" {
@@ -40,7 +49,6 @@ func main() {
 	ls := Ls(Directory, false)
 
 	SortByExtension(ls)
-
 }
 
 // Setup grabs some basic info about the current user.
