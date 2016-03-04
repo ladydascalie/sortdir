@@ -174,8 +174,6 @@ func SortByExtension(ls []string) {
 
 	// Move the files into their corresponding folders
 	MoveFilesTo(files, folders)
-
-	log.Println("Done !")
 }
 
 // UpperFirst is a convenient wrapper that uppercases the first letter
