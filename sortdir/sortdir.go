@@ -202,7 +202,7 @@ func assortToFolder(file string, folders []string) {
 		tmpfile := filepath.Ext(file)
 		tmpfile = strings.TrimPrefix(tmpfile, ".")
 		tmpfile = UpperFirst(tmpfile)
-		tmpfile = tmpfile + " Files"
+		tmpfile = tmpfile + "_Files"
 		tmpfile = UpperFirst(tmpfile)
 		if tmpfile == folder {
 			os.Rename(file, folder+"/"+file)
@@ -219,7 +219,7 @@ func CreateFolders(extensions []string) []string {
 	for _, ex := range extensions {
 		ex = strings.TrimPrefix(ex, ".")
 		ex = UpperFirst(ex)
-		folderName := ex + " Files"
+		folderName := ex + "_Files"
 		os.MkdirAll(folderName, 0755)
 		folders = append(folders, folderName)
 	}
