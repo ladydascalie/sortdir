@@ -25,14 +25,18 @@ var User = &UserInfo{}
 
 // Directory is the value provided by the user's input, or, by default the current working directory
 var Directory string
+var ByExt bool
 
 // RunAsCMD lets you run sortdir from within another go program
 func RunAsCMD() {
 	flag.StringVar(&Directory, "dir", "", "The directory you want to sort. Ex: sortdir -dir=\"/my/folder\"")
+	flag.BoolVar(&ByExt, "e", false, "sortdir -e")
+
 	flag.Parse()
 	if Directory == "" {
 		Directory = "."
 	}
+
 	User.Setup()
 
 	// Before anything else, perform a security check
@@ -42,7 +46,11 @@ func RunAsCMD() {
 
 	ls := Ls(Directory, false)
 
-	SortByExtension(ls)
+	if ByExt {
+		SortByExtension(ls)
+	} else {
+		SortByTypes(ls)
+	}
 }
 
 // Setup grabs some basic info about the current user.
@@ -152,17 +160,7 @@ func IsHiddenFile(str string) bool {
 // SortByExtension creates the necessary folders then moves the files into
 // the folders to which they correspond
 func SortByExtension(ls []string) {
-	var extensions []string
-	var files []string
-
-	for _, l := range ls {
-		// This basic check doesn't do everything
-		// TrimEmpty is still necessary at the end
-		if l != "" {
-			extensions = append(extensions, filepath.Ext(l))
-			files = append(files, l)
-		}
-	}
+	extensions, files := extractFilesAndExtenstions(ls)
 	// Remove empty vals
 	extensions = TrimEmpty(extensions)
 	files = TrimEmpty(files)
@@ -172,6 +170,40 @@ func SortByExtension(ls []string) {
 
 	// Move the files into their corresponding folders
 	MoveFilesTo(files, folders)
+}
+func extractFilesAndExtenstions(ls []string) ([]string, []string) {
+	var extensions []string
+	var files []string
+	for _, l := range ls {
+
+		// This basic check doesn't do everything
+		// TrimEmpty is still necessary at the end
+		if l != "" {
+			extensions = append(extensions, filepath.Ext(l))
+			files = append(files, l)
+		}
+	}
+	return extensions, files
+}
+
+func SortByTypes(ls []string) {
+	_, files := extractFilesAndExtenstions(ls)
+	files = TrimEmpty(files)
+
+	mapExtensions(files)
+}
+
+func mapExtensions(files []string) {
+	for _, f := range files {
+		e := strings.ToLower(strings.TrimPrefix(filepath.Ext(f), "."))
+
+		_, ok := DefaultFilesMapping[e]
+		if ok {
+			_ = os.MkdirAll(DefaultFilesMapping[e], 0755)
+			os.Rename(f, filepath.Join(DefaultFilesMapping[e], f))
+
+		}
+	}
 }
 
 // MoveFilesTo moves the files into their own directory
