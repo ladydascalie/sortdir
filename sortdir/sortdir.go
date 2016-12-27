@@ -49,14 +49,14 @@ func RunAsCMD() {
 // I could do without it, but it's convenient and allowed me
 // to learn and remember parts of the stardard library
 func (u *UserInfo) Setup() *UserInfo {
-	user, err := user.Current()
+	usr, err := user.Current()
 	Check(err)
 
-	u.Home = user.HomeDir
-	u.Name = user.Name
-	u.Username = user.Username
-	u.Uid = user.Uid
-	u.Gid = user.Gid
+	u.Home = usr.HomeDir
+	u.Name = usr.Name
+	u.Username = usr.Username
+	u.Uid = usr.Uid
+	u.Gid = usr.Gid
 
 	return u
 }
