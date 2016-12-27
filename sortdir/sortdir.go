@@ -8,8 +8,6 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
-	"unicode"
-	"unicode/utf8"
 )
 
 // UserInfo stores some basic info about the user
@@ -176,18 +174,6 @@ func SortByExtension(ls []string) {
 	MoveFilesTo(files, folders)
 }
 
-// UpperFirst is a convenient wrapper that uppercases the first letter
-// of a given string
-func UpperFirst(s string) string {
-	if s == "" {
-		return ""
-	}
-
-	r, n := utf8.DecodeRuneInString(s)
-
-	return string(unicode.ToUpper(r)) + s[n:]
-}
-
 // MoveFilesTo moves the files into their own directory
 // determined by assortToFolder
 func MoveFilesTo(files []string, folders []string) {
@@ -201,9 +187,6 @@ func assortToFolder(file string, folders []string) {
 	for _, folder := range folders {
 		tmpfile := filepath.Ext(file)
 		tmpfile = strings.TrimPrefix(tmpfile, ".")
-		tmpfile = UpperFirst(tmpfile)
-		tmpfile = tmpfile + "_Files"
-		tmpfile = UpperFirst(tmpfile)
 		if tmpfile == folder {
 			os.Rename(file, folder+"/"+file)
 		}
@@ -218,8 +201,7 @@ func CreateFolders(extensions []string) []string {
 	var folders []string
 	for _, ex := range extensions {
 		ex = strings.TrimPrefix(ex, ".")
-		ex = UpperFirst(ex)
-		folderName := ex + "_Files"
+		folderName := ex
 		os.MkdirAll(folderName, 0755)
 		folders = append(folders, folderName)
 	}
