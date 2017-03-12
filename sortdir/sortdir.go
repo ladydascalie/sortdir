@@ -53,6 +53,15 @@ func RunAsCMD() {
 	}
 }
 
+// Sort is a simplified version of RunAsCMD
+func Sort(dir string, dots bool) {
+	User.Setup()
+	Safeguard(dir)
+	MoveTo(dir)
+	ls := Ls(dir, dots)
+	SortByTypes(ls)
+}
+
 // Setup grabs some basic info about the current user.
 // I could do without it, but it's convenient and allowed me
 // to learn and remember parts of the stardard library
