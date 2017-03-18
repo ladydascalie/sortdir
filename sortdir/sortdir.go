@@ -135,10 +135,10 @@ func Ls(dir string, dots bool) []string {
 // based on wether it is hidden or not etc...
 func shouldDisplay(dots bool, fileName string) string {
 	var file string
-	if dots == true {
+	if dots {
 		file = fileName
-	} else if dots == false {
-		if IsHiddenFile(fileName) == false {
+	} else if !dots {
+		if !IsHiddenFile(fileName) {
 			file = fileName
 		}
 	}
